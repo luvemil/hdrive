@@ -1,0 +1,91 @@
+# Source: https://vrom911.github.io/blog/github-actions-releases
+on: [push]
+
+env:
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build_binary:
+    name: ${{ matrix.os }}/GHC ${{ matrix.ghc }}/${{ github.ref }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        ghc:
+          - "9.0.2"
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup Haskell
+        uses: haskell/actions/setup@v1
+        id: setup-haskell-stack
+        with:
+          ghc-version: ${{ matrix.ghc }} # Exact version of ghc to use
+          # cabal-version: 'latest'. Omitted, but defaults to 'latest'
+          enable-stack: true
+          stack-version: "latest"
+
+      - name: Cache stack files
+        uses: actions/cache@v2
+        with:
+          path: |
+            .stack-work
+            ~/.stack
+          key: ${{ runner.os }}-${{ matrix.ghc }}-stack
+
+      - name: Install dependencies
+        run: |
+          stack build --system-ghc --only-dependencies
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+      - name: Build binary
+        run: |
+          mkdir dist
+          stack build --system-ghc --copy-bins --local-bin-path dist
+
+      - name: "Tar binary"
+        run: tar -cvf main.tar dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: main
+          path: main.tar
+
+  build_docker:
+    name: Build docker image
+    needs: build_binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: main
+
+      - name: Untar binary
+        run: tar -xvf main.tar --strip-components=1 -C docker
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1.9.0
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+
+      - name: Build and push - Standard
+        uses: docker/build-push-action@v2.5.0
+        with:
+          context: docker/
+          file: docker/Dockerfile
+          build-args: |
+            BUILD_VERSION=${{ github.sha }}
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}

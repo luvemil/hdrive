@@ -1,0 +1,133 @@
+name: hdrive
+version: 0.1.0.0
+github: "luvemil/hdrive"
+license: BSD3
+author: "Marco Tarantino"
+maintainer: "taran.marco@protonmail.com"
+copyright: "2021 Marco Tarantino"
+
+extra-source-files:
+  - README.md
+  - ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description: Please see the README on GitHub at <https://github.com/luvemil/hdrive#readme>
+
+dependencies:
+  - base >= 4.7 && < 5
+  - bytestring
+  - aeson
+  - text
+  - time
+  - containers
+  - constraints
+  - lens
+  - generic-lens
+  - http-api-data
+  - unordered-containers
+  - uuid
+  - vector
+  - polysemy
+  - polysemy-plugin
+  - polysemy-kvstore
+  - sqlite-simple
+  - optparse-generic
+  - websockets
+  - wuss
+  - network
+  - unliftio
+  - unliftio-core
+  - unix
+  - stm
+  - filepath
+  - directory
+  - servant
+  - servant-server
+  - servant-auth
+  - servant-auth-server
+  - warp
+  - mtl
+  - hashable
+  - cryptonite
+  - http-client
+  - case-insensitive
+  - http-types
+  - memory
+  - amazonka
+  - amazonka-s3
+  - conduit
+  - conduit-extra
+  - transformers
+  - csv
+  - rel8
+  - hasql
+
+ghc-options:
+  - -Wall
+  - -Wincomplete-uni-patterns
+  - -Wincomplete-record-updates
+  - -Wcompat
+  - -Widentities
+  - -Wredundant-constraints
+  - -fhide-source-paths
+  - -Wpartial-fields
+  - -fplugin=Polysemy.Plugin
+
+default-extensions:
+  - BangPatterns
+  - ConstraintKinds
+  - DataKinds
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - InstanceSigs
+  - KindSignatures
+  - LambdaCase
+  - NamedFieldPuns
+  - MultiParamTypeClasses
+  - OverloadedStrings
+  - OverloadedLabels
+  - PolyKinds
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+
+library:
+  source-dirs: src
+
+executables:
+  hdrive-exe:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hdrive
+
+tests:
+  hdrive-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hdrive
+      - hspec
+      - QuickCheck

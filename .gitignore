@@ -1,0 +1,8 @@
+.stack-work/
+out/
+*~
+
+scripts/
+jwk.json
+
+.vscode/

@@ -1,0 +1,321 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           hdrive
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/luvemil/hdrive#readme>
+homepage:       https://github.com/luvemil/hdrive#readme
+bug-reports:    https://github.com/luvemil/hdrive/issues
+author:         Marco Tarantino
+maintainer:     taran.marco@protonmail.com
+copyright:      2021 Marco Tarantino
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/luvemil/hdrive
+
+library
+  exposed-modules:
+      AWSUtils
+      AWSUtils.Actions
+      AWSUtils.Config
+      AWSUtils.Internals
+      Control.Lens.Utils
+      HDrive.API
+      HDrive.Auth.Types
+      HDrive.DriveAPI
+      HDrive.DriveAPI.Actions
+      HDrive.DriveAPI.API
+      HDrive.DriveAPI.Handlers
+      HDrive.DriveAPI.Server
+      HDrive.DriveAPI.Types
+      HDrive.Node
+      HDrive.Node.Effects.FSStore
+      HDrive.Node.FS
+      HDrive.Node.Loaders.CSV
+      HDrive.Node.Loaders.JsonToPostgres
+      HDrive.Node.Loaders.Store
+      HDrive.Node.Rel8.Actions
+      HDrive.Node.Rel8.DirNodeRep
+      HDrive.Node.Rel8.FileNodeRep
+      HDrive.Node.Rel8.Instances
+      HDrive.Node.Rel8.Mappers
+      HDrive.Node.Rel8.StoreRep
+      HDrive.Node.Types.DirNode
+      HDrive.Node.Types.FileNode
+      HDrive.Node.Types.FS
+      HDrive.Node.Types.Store
+      HDrive.Runner
+      HDrive.Server
+      HDrive.Sign.Effects.SignUrl
+      HDrive.Sign.Effects.SignUrl.Internal
+      HDrive.SignAPI
+      HDrive.SignAPI.API
+      HDrive.SignAPI.Handlers
+      HDrive.SignAPI.Server
+      HDrive.SignAPI.Types
+      Lib
+      Lib.Config
+      Polysemy.Servant.Error
+      Polysemy.Servant.Server
+      Polysemy.Servant.ThrowError
+      Utils
+  other-modules:
+      Paths_hdrive
+  hs-source-dirs:
+      src
+  default-extensions:
+      BangPatterns
+      ConstraintKinds
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      NamedFieldPuns
+      MultiParamTypeClasses
+      OverloadedStrings
+      OverloadedLabels
+      PolyKinds
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+  ghc-options: -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wcompat -Widentities -Wredundant-constraints -fhide-source-paths -Wpartial-fields -fplugin=Polysemy.Plugin
+  build-depends:
+      aeson
+    , amazonka
+    , amazonka-s3
+    , base >=4.7 && <5
+    , bytestring
+    , case-insensitive
+    , conduit
+    , conduit-extra
+    , constraints
+    , containers
+    , cryptonite
+    , csv
+    , directory
+    , filepath
+    , generic-lens
+    , hashable
+    , hasql
+    , http-api-data
+    , http-client
+    , http-types
+    , lens
+    , memory
+    , mtl
+    , network
+    , optparse-generic
+    , polysemy
+    , polysemy-kvstore
+    , polysemy-plugin
+    , rel8
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-server
+    , sqlite-simple
+    , stm
+    , text
+    , time
+    , transformers
+    , unix
+    , unliftio
+    , unliftio-core
+    , unordered-containers
+    , uuid
+    , vector
+    , warp
+    , websockets
+    , wuss
+  default-language: Haskell2010
+
+executable hdrive-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_hdrive
+  hs-source-dirs:
+      app
+  default-extensions:
+      BangPatterns
+      ConstraintKinds
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      NamedFieldPuns
+      MultiParamTypeClasses
+      OverloadedStrings
+      OverloadedLabels
+      PolyKinds
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+  ghc-options: -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wcompat -Widentities -Wredundant-constraints -fhide-source-paths -Wpartial-fields -fplugin=Polysemy.Plugin -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , amazonka
+    , amazonka-s3
+    , base >=4.7 && <5
+    , bytestring
+    , case-insensitive
+    , conduit
+    , conduit-extra
+    , constraints
+    , containers
+    , cryptonite
+    , csv
+    , directory
+    , filepath
+    , generic-lens
+    , hashable
+    , hasql
+    , hdrive
+    , http-api-data
+    , http-client
+    , http-types
+    , lens
+    , memory
+    , mtl
+    , network
+    , optparse-generic
+    , polysemy
+    , polysemy-kvstore
+    , polysemy-plugin
+    , rel8
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-server
+    , sqlite-simple
+    , stm
+    , text
+    , time
+    , transformers
+    , unix
+    , unliftio
+    , unliftio-core
+    , unordered-containers
+    , uuid
+    , vector
+    , warp
+    , websockets
+    , wuss
+  default-language: Haskell2010
+
+test-suite hdrive-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Control.Lens.UtilsSpec
+      HDrive.Node.FSSpec
+      Paths_hdrive
+  hs-source-dirs:
+      test
+  default-extensions:
+      BangPatterns
+      ConstraintKinds
+      DataKinds
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      NamedFieldPuns
+      MultiParamTypeClasses
+      OverloadedStrings
+      OverloadedLabels
+      PolyKinds
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+  ghc-options: -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wcompat -Widentities -Wredundant-constraints -fhide-source-paths -Wpartial-fields -fplugin=Polysemy.Plugin -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      QuickCheck
+    , aeson
+    , amazonka
+    , amazonka-s3
+    , base >=4.7 && <5
+    , bytestring
+    , case-insensitive
+    , conduit
+    , conduit-extra
+    , constraints
+    , containers
+    , cryptonite
+    , csv
+    , directory
+    , filepath
+    , generic-lens
+    , hashable
+    , hasql
+    , hdrive
+    , hspec
+    , http-api-data
+    , http-client
+    , http-types
+    , lens
+    , memory
+    , mtl
+    , network
+    , optparse-generic
+    , polysemy
+    , polysemy-kvstore
+    , polysemy-plugin
+    , rel8
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-server
+    , sqlite-simple
+    , stm
+    , text
+    , time
+    , transformers
+    , unix
+    , unliftio
+    , unliftio-core
+    , unordered-containers
+    , uuid
+    , vector
+    , warp
+    , websockets
+    , wuss
+  default-language: Haskell2010
