@@ -6,3 +6,5 @@ scripts/
 jwk.json
 
 .vscode/
+
+.env
