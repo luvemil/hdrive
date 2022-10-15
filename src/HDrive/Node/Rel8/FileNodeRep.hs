@@ -26,16 +26,16 @@ data FileNodeRep f = FileNodeRep
 fileNodeRepSchema :: TableSchema (FileNodeRep Name)
 fileNodeRepSchema =
     TableSchema
-        { name = "fileNodes"
+        { name = "file_nodes"
         , schema = Nothing
         , columns =
             FileNodeRep
                 { title = "title"
-                , fileType = "fileType"
+                , fileType = "file_type"
                 , size = "size"
                 , uuid = "uuid"
                 , path = "path"
                 , thumb = "thumb"
-                , dirId = "dirId"
+                , dirId = "dir_id"
                 }
         }

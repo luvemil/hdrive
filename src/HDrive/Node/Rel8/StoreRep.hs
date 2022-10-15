@@ -23,7 +23,7 @@ storeRepSchema =
         , schema = Nothing
         , columns =
             StoreRep
-                { storeName = "name"
+                { storeName = "store_name"
                 , bucket = "bucket"
                 , path = "path"
                 }

@@ -2,17 +2,20 @@ module HDrive.Node.Rel8.Actions where
 
 import Control.Lens.Combinators
 import Control.Lens.Operators
+import Data.Int (Int64)
 import HDrive.Node.Rel8.DirNodeRep (dirNodeRepSchema)
 import qualified HDrive.Node.Rel8.DirNodeRep as DirNodeRep
 import HDrive.Node.Rel8.FileNodeRep (fileNodeRepSchema)
 import qualified HDrive.Node.Rel8.FileNodeRep as FileNodeRep
 import HDrive.Node.Rel8.Mappers
-import HDrive.Node.Rel8.StoreRep as StoreRep
+import HDrive.Node.Rel8.StoreRep (storeRepSchema)
+import qualified HDrive.Node.Rel8.StoreRep as StoreRep
 import HDrive.Node.Types.DirNode (DirId (DirId))
 import HDrive.Node.Types.FS (FSElem (FSDir, FSFile))
 import HDrive.Node.Types.Store
 import Hasql.Connection (Connection)
 import Hasql.Session
+import Hasql.Statement (Statement)
 import Rel8 ((&&.), (==.))
 import qualified Rel8
 
@@ -27,7 +30,7 @@ getAllStoresSession = do
     storeRes <- statement () . Rel8.select $ Rel8.each storeRepSchema
     pure $ map toStore storeRes
 
-allStoresByName :: StoreName -> Rel8.Query (StoreRep Rel8.Expr)
+allStoresByName :: StoreName -> Rel8.Query (StoreRep.StoreRep Rel8.Expr)
 allStoresByName sn = do
     store <- Rel8.each storeRepSchema
     Rel8.where_ $ StoreRep.storeName store ==. Rel8.lit sn
@@ -44,8 +47,10 @@ getElementsInFolder sn fp = do
         store <- allStoresByName sn
         dir <- Rel8.each dirNodeRepSchema
         Rel8.where_ $
-            DirNodeRep.storeName dir ==. StoreRep.storeName store
-                &&. DirNodeRep.fullPath dir ==. Rel8.lit fp
+            DirNodeRep.storeName dir
+                ==. StoreRep.storeName store
+                &&. DirNodeRep.fullPath dir
+                ==. Rel8.lit fp
         pure dir
     case dirs ^? traversed of
         Nothing -> pure []
@@ -70,3 +75,22 @@ getElementsInFolder sn fp = do
 --     Rel8.where_
 
 -- TODO: get all subdirs and files and wrap in FSNode
+
+putElems :: (Rel8.Selects names exprs, Rel8.Serializable exprs a) => Rel8.TableSchema names -> [a] -> Statement () Int64
+putElems schema items =
+    Rel8.insert $
+        Rel8.Insert
+            { into = schema
+            , rows = Rel8.values (map Rel8.lit items)
+            , onConflict = Rel8.Abort
+            , returning = Rel8.NumberOfRowsAffected
+            }
+
+putStores :: [StoreRep.StoreRep Rel8.Result] -> Statement () Int64
+putStores = putElems storeRepSchema
+
+putDirNodes :: [DirNodeRep.DirNodeRep Rel8.Result] -> Statement () Int64
+putDirNodes = putElems dirNodeRepSchema
+
+putFileNodes :: [FileNodeRep.FileNodeRep Rel8.Result] -> Statement () Int64
+putFileNodes = putElems fileNodeRepSchema

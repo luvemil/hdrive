@@ -67,6 +67,9 @@ dependencies:
   - csv
   - rel8
   - hasql
+  - hasql-migration
+  - hasql-transaction
+  - hasql-pool
 
 ghc-options:
   - -Wall

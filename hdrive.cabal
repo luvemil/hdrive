@@ -64,7 +64,10 @@ library
       HDrive.SignAPI.Server
       HDrive.SignAPI.Types
       Lib
+      Lib.Cli
       Lib.Config
+      Lib.Db
+      Lib.Mode
       Polysemy.Servant.Error
       Polysemy.Servant.Server
       Polysemy.Servant.ThrowError
@@ -117,6 +120,9 @@ library
     , generic-lens
     , hashable
     , hasql
+    , hasql-migration
+    , hasql-pool
+    , hasql-transaction
     , http-api-data
     , http-client
     , http-types
@@ -199,6 +205,9 @@ executable hdrive-exe
     , generic-lens
     , hashable
     , hasql
+    , hasql-migration
+    , hasql-pool
+    , hasql-transaction
     , hdrive
     , http-api-data
     , http-client
@@ -286,6 +295,9 @@ test-suite hdrive-test
     , generic-lens
     , hashable
     , hasql
+    , hasql-migration
+    , hasql-pool
+    , hasql-transaction
     , hdrive
     , hspec
     , http-api-data

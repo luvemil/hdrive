@@ -22,15 +22,15 @@ data DirNodeRep f = DirNodeRep
 dirNodeRepSchema :: TableSchema (DirNodeRep Name)
 dirNodeRepSchema =
     TableSchema
-        { name = "dirNodes"
+        { name = "dir_nodes"
         , schema = Nothing
         , columns =
             DirNodeRep
                 { title = "title"
-                , fullPath = "fullPath"
+                , fullPath = "full_path"
                 , thumb = "thumb"
                 , uuid = "uuid"
-                , dirId = "dirId"
-                , storeName = "storeName"
+                , dirId = "dir_id"
+                , storeName = "store_name"
                 }
         }
