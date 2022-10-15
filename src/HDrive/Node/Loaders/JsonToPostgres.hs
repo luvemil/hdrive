@@ -14,7 +14,7 @@ import HDrive.Node.Loaders.Store
 import HDrive.Node.Rel8.DirNodeRep (DirNodeRep)
 import qualified HDrive.Node.Rel8.DirNodeRep as DirNodeRep
 import HDrive.Node.Rel8.FileNodeRep (FileNodeRep)
-import HDrive.Node.Rel8.Mappers (fromDirNode, fromFileNode, fromStore)
+import HDrive.Node.Rel8.Mappers (fromDirNode, fromFileNode, fromStore, toDirNode, toStore)
 import HDrive.Node.Rel8.StoreRep (StoreRep)
 import HDrive.Node.Types.DirNode (DirNode)
 import qualified HDrive.Node.Types.DirNode as DirNode
@@ -22,6 +22,15 @@ import HDrive.Node.Types.FS
 import HDrive.Node.Types.FileNode (FileNode)
 import HDrive.Node.Types.Store
 import Rel8 (Result)
+
+dumpStore :: SMap (DirNodeRep Result) -> String
+dumpStore smap =
+    let items =
+            smap
+                & M.toList
+                & (traversed . _2 %~ \s -> toDirNode s)
+                & M.fromList
+     in show items
 
 type SMap t = M.Map (StoreName, FilePath) t
 
@@ -71,7 +80,16 @@ addFile fn s fpM = do
             dirVal <- M.lookup (s, f) store
             pure $ DirNodeRep.uuid dirVal
     case parentDirId of
-        Nothing -> pure . Left $ "Parent directory not found"
+        Nothing ->
+            pure . Left $ -- TODO: use a better message
+                "Parent directory not found\nfileNode: "
+                    <> show fn
+                    <> "\nstoreName: "
+                    <> show s
+                    <> "\nfilePath: "
+                    <> show fpM
+        -- <> "\nstore dump:\n"
+        -- <> dumpStore store
         Just dId -> pure . Right $ fromFileNode fn dId
 
 accAddFile :: Either String [FileNodeRep Result] -> ((StoreName, FilePath), FileNode) -> DirNodeComputation (Either String [FileNodeRep Result])

@@ -3,8 +3,15 @@ module Lib (
 ) where
 
 import AWSUtils.Actions (loadAWSUtilsConfig)
+import Control.Lens
+import Control.Lens.Utils
+import Control.Monad (forM_)
+import qualified Data.Map.Strict as M
+import HDrive.Node (FSElem)
 import HDrive.Node.Loaders.JsonToPostgres (loadDataFromFile, toRel8Rep)
 import HDrive.Node.Rel8.Actions as Actions
+import HDrive.Node.Types.DirNode (DirNode)
+import HDrive.Node.Types.Store (StoreName)
 import HDrive.Runner (createApp, createDbApp)
 import qualified Hasql.Connection as Hasql
 import qualified Hasql.Session as HS
@@ -69,10 +76,18 @@ runMigrate fp sett = do
     initializeDb conn
     updateDb conn fp
 
--- Tentative implementation, move it to a more domain specific place
+-- Tentative implementation, move it to a more appropriate place
 runLoad :: FilePath -> Hasql.Settings -> IO ()
 runLoad fp sett = do
     (fsMap, stores) <- loadDataFromFile fp
+    -- START DEBUG CODE
+    -- let allFileElems :: [((StoreName, FilePath), FSElem)] = unwrapApplicative $ M.toList fsMap
+    --     allDirNodes :: [((StoreName, FilePath), DirNode)] = unwrapPrismTraversable #_FSDir allFileElems
+    -- putStrLn "All dirs:"
+    -- forM_ allDirNodes $ \((sn, fn), dn) -> do
+    --     let s = sn ^. #_StoreName
+    --     putStrLn $ s <> "(" <> fn <> "): " <> show dn
+    -- END DEBUG CODE
     let rep = toRel8Rep fsMap stores
     (stores', dirNodes, fileNodes) <- case rep of
         Left s -> do
@@ -90,4 +105,4 @@ runLoad fp sett = do
     case res of
         Left qe -> do
             putStrLn $ "Error running query:\n" <> show qe
-        Right _ -> pure ()
+        Right _ -> putStrLn "Done."
