@@ -94,13 +94,18 @@ runLoad fp sett = do
             putStrLn $ "Cannot map to rel8 representations: " <> s
             error "APP_ERROR"
         Right x -> pure x
-    conn <- getConnection sett
+
+    -- Create the connection after the transaction has been prepared
+    -- conn <- getConnection sett
+    putStrLn "Preparing transaction..."
     let q :: HT.Transaction () = do
             _ <- HT.statement () $ Actions.putStores stores'
             _ <- HT.statement () $ Actions.putDirNodes dirNodes
             _ <- HT.statement () $ Actions.putFileNodes fileNodes
             pure ()
         qS = transaction RepeatableRead Write q
+    putStrLn "Transaction ready."
+    conn <- getConnection sett
     res <- HS.run qS conn
     case res of
         Left qe -> do

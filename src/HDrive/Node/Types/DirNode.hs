@@ -11,6 +11,9 @@ import GHC.Generics
 import Servant (FromHttpApiData)
 import System.FilePath.Lens
 
+-- Rel8 for instance declarations
+import qualified Rel8
+
 data DirNode = DirNode
     { title :: String
     , fullPath :: String
@@ -32,7 +35,7 @@ newDir fp = do
 
 newtype DirId = DirId String
     deriving (Show, Eq, Ord, Generic)
-    deriving newtype (FromJSON, ToJSON, FromHttpApiData)
+    deriving newtype (FromJSON, ToJSON, FromHttpApiData, Rel8.DBType, Rel8.DBEq)
 
 data ResponseDir a = ResponseDir
     { thisDir :: DirNode

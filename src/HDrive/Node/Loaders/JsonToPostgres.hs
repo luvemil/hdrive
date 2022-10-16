@@ -14,6 +14,7 @@ import HDrive.Node.Loaders.Store
 import HDrive.Node.Rel8.DirNodeRep (DirNodeRep)
 import qualified HDrive.Node.Rel8.DirNodeRep as DirNodeRep
 import HDrive.Node.Rel8.FileNodeRep (FileNodeRep)
+import HDrive.Node.Rel8.Instances ()
 import HDrive.Node.Rel8.Mappers (fromDirNode, fromFileNode, fromStore, toDirNode, toStore)
 import HDrive.Node.Rel8.StoreRep (StoreRep)
 import HDrive.Node.Types.DirNode (DirNode)

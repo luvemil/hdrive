@@ -1,3 +1,5 @@
+{-# LANGUAGE StandaloneDeriving #-}
+
 module HDrive.Node.Types.FileNode where
 
 import Data.Aeson (FromJSON (..), ToJSON (..), withText)
@@ -8,8 +10,10 @@ import Data.Generics.Wrapped ()
 import GHC.Generics
 import Servant (FromHttpApiData)
 
+import qualified Rel8
+
 data FileType = FileImage | FileVideo | FileOther
-    deriving (Show, Eq)
+    deriving (Show, Eq, Generic)
 
 instance FromJSON FileType where
     parseJSON = withText "filetype" $ \case
@@ -22,13 +26,16 @@ instance ToJSON FileType where
     toJSON FileVideo = "VIDEO"
     toJSON FileOther = "OTHER"
 
+deriving via (Rel8.JSONEncoded FileType) instance Rel8.DBType FileType
+instance Rel8.DBEq FileType
+
 newtype S3FilePath = S3FilePath String
     deriving (Show, Eq, Generic)
-    deriving newtype (FromJSON, ToJSON)
+    deriving newtype (FromJSON, ToJSON, Rel8.DBType, Rel8.DBEq)
 
 newtype FileId = FileId String
     deriving (Show, Eq, Generic)
-    deriving newtype (FromJSON, ToJSON, FromHttpApiData)
+    deriving newtype (FromJSON, ToJSON, FromHttpApiData, Rel8.DBType, Rel8.DBEq)
 
 data FileNode = FileNode
     { title :: String

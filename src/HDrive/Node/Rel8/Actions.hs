@@ -7,6 +7,7 @@ import HDrive.Node.Rel8.DirNodeRep (dirNodeRepSchema)
 import qualified HDrive.Node.Rel8.DirNodeRep as DirNodeRep
 import HDrive.Node.Rel8.FileNodeRep (fileNodeRepSchema)
 import qualified HDrive.Node.Rel8.FileNodeRep as FileNodeRep
+import HDrive.Node.Rel8.Instances ()
 import HDrive.Node.Rel8.Mappers
 import HDrive.Node.Rel8.StoreRep (storeRepSchema)
 import qualified HDrive.Node.Rel8.StoreRep as StoreRep

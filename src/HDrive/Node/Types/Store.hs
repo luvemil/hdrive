@@ -10,9 +10,11 @@ import GHC.Generics
 import Data.Aeson (FromJSON, ToJSON)
 import Servant.API (FromHttpApiData)
 
+import qualified Rel8
+
 newtype StoreName = StoreName String
     deriving (Show, Eq, Ord, FromHttpApiData, Generic)
-    deriving newtype (ToJSON, FromJSON)
+    deriving newtype (ToJSON, FromJSON, Rel8.DBType, Rel8.DBEq)
 
 data Store a = Store
     { storeName :: StoreName

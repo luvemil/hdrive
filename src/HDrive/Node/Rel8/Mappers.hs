@@ -2,6 +2,7 @@ module HDrive.Node.Rel8.Mappers where
 
 import qualified HDrive.Node.Rel8.DirNodeRep as DirNodeRep
 import qualified HDrive.Node.Rel8.FileNodeRep as FileNodeRep
+import HDrive.Node.Rel8.Instances ()
 import HDrive.Node.Rel8.StoreRep
 import HDrive.Node.Types.DirNode (DirNode (DirNode))
 import qualified HDrive.Node.Types.DirNode as DirNode
