@@ -6,7 +6,6 @@ module HDrive.Runner where
 import AWSUtils.Actions (MonadAWSEnv)
 import AWSUtils.Config (AWSUtilsConfig)
 import Control.Lens
-import Control.Monad ((>=>))
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Except (ExceptT (ExceptT), except, runExceptT)
@@ -15,14 +14,21 @@ import Data.IORef (IORef, newIORef)
 import qualified Data.Map as M
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TL
-import HDrive.API (AuthHDrAPI, HDriveAPI)
-import HDrive.DriveAPI (DriveApiError (DriveApiError))
-import HDrive.Node
+import HDrive.API (AuthHDrAPI)
+import HDrive.DriveAPI.Types (DriveApiError)
+import HDrive.Node.Effects.FSStore (
+  runFSStoreAsHasql,
+  runFSStoreAsKVStore,
+ )
 import HDrive.Node.Loaders.JsonToPostgres (loadDataFromFile)
-import HDrive.Server (authHDrServer, hdriveServer)
+import HDrive.Node.Types.FS (FSElem)
+import HDrive.Node.Types.Store (Store, StoreName)
+import HDrive.Server (authHDrServer)
 import HDrive.Sign.Effects.SignUrl (runSignUrlWithAmazonka)
-import HDrive.SignAPI
-import qualified Hasql.Connection as Hasql
+import HDrive.SignAPI.API (SignServerAPI)
+import HDrive.SignAPI.Handlers (handleSignRequest)
+import HDrive.SignAPI.Types (SignApiError)
+import qualified Hasql.Pool as HP
 import Polysemy
 import Polysemy.Error (runError)
 import Polysemy.Input (runInputConst)
@@ -33,7 +39,6 @@ import Polysemy.Trace (traceToStdout)
 import Servant
 import Servant.Auth (JWT)
 import Servant.Auth.Server (CookieSettings, JWTSettings, defaultCookieSettings, defaultJWTSettings, generateKey)
-import Text.CSV (parseCSVFromFile)
 import Utils (embedMaybe, groupLeftEither)
 
 signServer :: MonadUnliftIO m => ServerT SignServerAPI (ExceptT String (MonadAWSEnv m))
@@ -85,26 +90,26 @@ liftFreeServer config stores storeMap = hoistServerWithContext (Proxy @(AuthHDrA
     liftServerError :: Handler (Either ServerError a) -> Handler a
     liftServerError h = h >>= \l -> Handler $ except l
 
-createDbApp :: AWSUtilsConfig -> Hasql.Connection -> FilePath -> IO Application
-createDbApp conf conn jwkPath = do
+createDbApp :: AWSUtilsConfig -> HP.Pool -> FilePath -> IO Application
+createDbApp conf pool jwkPath = do
   myKey <- generateKey
   jwk <- embedMaybe =<< decodeFileStrict' jwkPath
-  let app = liftFreeDbServer conf conn
+  let app = liftFreeDbServer conf pool
       jwtCfgBase = defaultJWTSettings myKey
       jwtCfg = jwtCfgBase & #validationKeys .~ jwk
       ctx = defaultCookieSettings :. jwtCfg :. EmptyContext
   pure $ serveWithContext (Proxy @(AuthHDrAPI '[JWT])) ctx app
 
-liftFreeDbServer :: AWSUtilsConfig -> Hasql.Connection -> Server (AuthHDrAPI '[JWT])
+liftFreeDbServer :: AWSUtilsConfig -> HP.Pool -> Server (AuthHDrAPI '[JWT])
 liftFreeDbServer config connection = hoistServerWithContext (Proxy @(AuthHDrAPI '[JWT])) (Proxy @'[CookieSettings, JWTSettings]) (interpretServer config connection) authHDrServer
  where
-  interpretServer conf conn api =
+  interpretServer conf pool api =
     api
       & traceToStdout
       & runInputConst conf
       & runSignUrlWithAmazonka
       & runFSStoreAsHasql
-      & runInputConst conn
+      & runInputConst pool
       & runError @ServerError
       & runError @DriveApiError
       & runError @SignApiError

@@ -3,20 +3,12 @@ module Lib (
 ) where
 
 import AWSUtils.Actions (loadAWSUtilsConfig)
-import Control.Lens
-import Control.Lens.Utils
 import Control.Monad (forM_)
-import Data.Int (Int64)
-import qualified Data.Map.Strict as M
-import HDrive.Node (FSElem)
 import HDrive.Node.Loaders.JsonToPostgres (loadDataFromFile, toRel8Rep)
 import HDrive.Node.Rel8.Actions as Actions
-import HDrive.Node.Types.DirNode (DirNode)
-import HDrive.Node.Types.Store (StoreName)
 import HDrive.Runner (createApp, createDbApp)
 import qualified Hasql.Connection as Hasql
 import qualified Hasql.Pool as HP
-import qualified Hasql.Session as HS
 import qualified Hasql.Transaction as HT
 import Hasql.Transaction.Sessions (IsolationLevel (RepeatableRead), Mode (Write), transaction)
 import Lib.Cli (loadMode)
@@ -65,10 +57,10 @@ runDbServer dbOptions = do
 
     jwkPath :: FilePath <- getEnv "JWK_PATH"
 
-    conn <- getConnection dbOptions
+    pool <- HP.acquire (5, 10000000, dbOptions)
 
     config <- loadAWSUtilsConfig
-    app <- createDbApp config conn jwkPath
+    app <- createDbApp config pool jwkPath
     putStrLn $ "Running hdrive on port " <> show port
     run port app
 
