@@ -83,7 +83,7 @@ putElems schema items =
         Rel8.Insert
             { into = schema
             , rows = Rel8.values (map Rel8.lit items)
-            , onConflict = Rel8.Abort
+            , onConflict = Rel8.DoNothing
             , returning = Rel8.NumberOfRowsAffected
             }
 

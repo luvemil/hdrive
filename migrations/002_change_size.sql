@@ -1,0 +1,1 @@
+ALTER TABLE file_nodes ALTER COLUMN size TYPE BIGINT;

@@ -6,6 +6,7 @@ import AWSUtils.Actions (loadAWSUtilsConfig)
 import Control.Lens
 import Control.Lens.Utils
 import Control.Monad (forM_)
+import Data.Int (Int64)
 import qualified Data.Map.Strict as M
 import HDrive.Node (FSElem)
 import HDrive.Node.Loaders.JsonToPostgres (loadDataFromFile, toRel8Rep)
@@ -14,6 +15,7 @@ import HDrive.Node.Types.DirNode (DirNode)
 import HDrive.Node.Types.Store (StoreName)
 import HDrive.Runner (createApp, createDbApp)
 import qualified Hasql.Connection as Hasql
+import qualified Hasql.Pool as HP
 import qualified Hasql.Session as HS
 import qualified Hasql.Transaction as HT
 import Hasql.Transaction.Sessions (IsolationLevel (RepeatableRead), Mode (Write), transaction)
@@ -95,19 +97,63 @@ runLoad fp sett = do
             error "APP_ERROR"
         Right x -> pure x
 
-    -- Create the connection after the transaction has been prepared
-    -- conn <- getConnection sett
-    putStrLn "Preparing transaction..."
-    let q :: HT.Transaction () = do
-            _ <- HT.statement () $ Actions.putStores stores'
-            _ <- HT.statement () $ Actions.putDirNodes dirNodes
-            _ <- HT.statement () $ Actions.putFileNodes fileNodes
-            pure ()
-        qS = transaction RepeatableRead Write q
-    putStrLn "Transaction ready."
-    conn <- getConnection sett
-    res <- HS.run qS conn
-    case res of
-        Left qe -> do
-            putStrLn $ "Error running query:\n" <> show qe
-        Right _ -> putStrLn "Done."
+    putStrLn "Creating pool..."
+    pool <- HP.acquire (5, 10000000, sett)
+
+    let runTransaction :: HT.Transaction a -> IO (Either HP.UsageError a)
+        runTransaction t = do
+            let tS = transaction RepeatableRead Write t
+            HP.use pool tS
+        chunk :: Int -> [a] -> [[a]]
+        chunk n [] = []
+        chunk n xs = take n xs : chunk n (drop n xs)
+        storesChunks = chunk 10 stores'
+        dirNodesChunks = chunk 10 dirNodes
+        fileNodesChunks = chunk 50 fileNodes
+    -- handleResponse :: String -> Either HP.UsageError Int64 -> IO ()
+    -- handleResponse name (Left ue) = case ue of
+    --     HP.ConnectionError m_bs -> _
+    --     HP.SessionError (HS.QueryError bs txts ce) -> case ce of
+    --         ClientError m_bs -> _
+    --         ResultError re -> _
+    -- handleResponse name (Right ni) = do
+    --     putStrLn $ show ni <> name <> " inserted"
+
+    putStrLn "Inserting stores..."
+    forM_ storesChunks $ \sc -> do
+        res <- runTransaction . HT.statement () $ Actions.putStores sc
+        case res of
+            Left ue -> do
+                putStrLn $ "Error inserting stores:\n" <> show ue
+                error "QUERY_ERROR"
+            Right ni -> do
+                putStrLn $ show ni <> "stores inserted"
+                pure ()
+    putStrLn "Stores done."
+
+    putStrLn "Inserting dirs..."
+    forM_ dirNodesChunks $ \dc -> do
+        res <- runTransaction . HT.statement () $ Actions.putDirNodes dc
+        case res of
+            Left ue -> do
+                putStrLn $ "Error inserting dirs:\n" <> show ue
+                error "QUERY_ERROR"
+            Right ni -> do
+                putStrLn $ show ni <> "dirs inserted"
+                pure ()
+    putStrLn "Dirs done."
+
+    putStrLn "Inserting files..."
+    forM_ fileNodesChunks $ \fc -> do
+        res <- runTransaction . HT.statement () $ Actions.putFileNodes fc
+        case res of
+            Left ue -> do
+                putStrLn $ "Error inserting files:\n" <> show ue
+                error "QUERY_ERROR"
+            Right ni -> do
+                putStrLn $ show ni <> "files inserted"
+                pure ()
+    putStrLn "Files done."
+
+    HP.release pool
+    putStrLn "Pool released."
