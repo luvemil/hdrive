@@ -1,7 +1,6 @@
 module HDrive.DriveAPI.Actions where
 
 import AWSUtils.Config
-import Control.Lens (_Just)
 import Control.Lens.Operators
 import Data.Text (Text)
 import qualified Data.Text as T

@@ -2,13 +2,12 @@ module HDrive.Server where
 
 import qualified Data.ByteString.Lazy.Char8 as BS
 import HDrive.API
-import HDrive.Auth.Types (AuthError (..))
 import HDrive.DriveAPI
 import HDrive.SignAPI
 import Polysemy
-import Polysemy.Error (Error, throw)
+import Polysemy.Error (Error)
 import Polysemy.Servant.ThrowError ()
-import Polysemy.Trace (Trace, trace)
+import Polysemy.Trace (Trace)
 import Servant
 import Servant.Auth.Server (AuthResult (..), ThrowAll (throwAll))
 

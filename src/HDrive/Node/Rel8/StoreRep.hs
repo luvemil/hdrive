@@ -4,8 +4,7 @@ module HDrive.Node.Rel8.StoreRep where
 
 import GHC.Generics (Generic)
 import HDrive.Node.Rel8.Instances ()
-import HDrive.Node.Types.Store (Store (Store), StoreName)
-import qualified HDrive.Node.Types.Store as Store
+import HDrive.Node.Types.Store (StoreName)
 import Rel8
 
 data StoreRep f = StoreRep

@@ -7,18 +7,16 @@ import Control.Lens.Utils (unwrapApplicative, unwrapPrismTraversable)
 import Control.Monad
 import qualified Control.Monad.State.Strict as S
 import qualified Data.Map.Strict as M
-import Data.Maybe (mapMaybe)
-import HDrive.Node (mapToFS)
+import HDrive.Node.FS (mapToFS)
 import HDrive.Node.Loaders.CSV (loadCsvFromFile)
 import HDrive.Node.Loaders.Store
 import HDrive.Node.Rel8.DirNodeRep (DirNodeRep)
 import qualified HDrive.Node.Rel8.DirNodeRep as DirNodeRep
 import HDrive.Node.Rel8.FileNodeRep (FileNodeRep)
 import HDrive.Node.Rel8.Instances ()
-import HDrive.Node.Rel8.Mappers (fromDirNode, fromFileNode, fromStore, toDirNode, toStore)
+import HDrive.Node.Rel8.Mappers (fromDirNode, fromFileNode, fromStore, toDirNode)
 import HDrive.Node.Rel8.StoreRep (StoreRep)
 import HDrive.Node.Types.DirNode (DirNode)
-import qualified HDrive.Node.Types.DirNode as DirNode
 import HDrive.Node.Types.FS
 import HDrive.Node.Types.FileNode (FileNode)
 import HDrive.Node.Types.Store

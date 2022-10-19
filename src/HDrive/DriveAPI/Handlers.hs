@@ -3,7 +3,7 @@ module HDrive.DriveAPI.Handlers where
 import AWSUtils.Config (AWSUtilsConfig)
 import Control.Lens
 import qualified Data.Text as T
-import HDrive.DriveAPI.Actions (signThumb, signThumbs)
+import HDrive.DriveAPI.Actions (signThumbs)
 import HDrive.DriveAPI.Types
 import qualified HDrive.Node.Effects.FSStore as FSStore
 import HDrive.Node.Types.FS

@@ -5,8 +5,8 @@ module HDrive.Node.Rel8.DirNodeRep where
 import GHC.Generics (Generic)
 import HDrive.Node.Rel8.Instances ()
 import HDrive.Node.Types.DirNode (DirId)
-import HDrive.Node.Types.Store (StoreName (StoreName))
-import Rel8
+import HDrive.Node.Types.Store (StoreName)
+import Rel8 (Column, Name, Rel8able, TableSchema (..))
 
 data DirNodeRep f = DirNodeRep
     { title :: Column f String

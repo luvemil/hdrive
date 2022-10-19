@@ -11,7 +11,6 @@ import HDrive.Node.Rel8.Instances ()
 import HDrive.Node.Rel8.Mappers
 import HDrive.Node.Rel8.StoreRep (storeRepSchema)
 import qualified HDrive.Node.Rel8.StoreRep as StoreRep
-import HDrive.Node.Types.DirNode (DirId (DirId))
 import HDrive.Node.Types.FS (FSElem (FSDir, FSFile))
 import HDrive.Node.Types.Store
 import Hasql.Connection (Connection)

@@ -97,7 +97,7 @@ runLoad fp sett = do
             let tS = transaction RepeatableRead Write t
             HP.use pool tS
         chunk :: Int -> [a] -> [[a]]
-        chunk n [] = []
+        chunk _ [] = []
         chunk n xs = take n xs : chunk n (drop n xs)
         storesChunks = chunk 10 stores'
         dirNodesChunks = chunk 10 dirNodes

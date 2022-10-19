@@ -1,13 +1,4 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE StandaloneDeriving #-}
-
 module HDrive.Node.Rel8.Instances where
-
-import GHC.Generics
-import HDrive.Node.Types.DirNode
-import HDrive.Node.Types.FileNode
-import HDrive.Node.Types.Store
-import Rel8
 
 -- instance DBType DirId
 -- instance DBEq DirId

@@ -9,9 +9,7 @@ import HDrive.Node.Rel8.Actions (getAllStoresSession, getElementsInFolder)
 import qualified HDrive.Node.Rel8.Actions as Actions
 import HDrive.Node.Types.FS
 import HDrive.Node.Types.Store (Store, StoreName)
-import qualified Hasql.Connection as Hasql
 import qualified Hasql.Pool as HP
-import qualified Hasql.Session as Hasql
 import Polysemy
 import Polysemy.Input
 import Polysemy.KVStore
